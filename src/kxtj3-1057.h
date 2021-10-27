@@ -94,7 +94,7 @@ public:
 	// Threshold (g) = threshold (counts) / 256(counts/g)
 	// timeDur (sec) = WAKEUP_COUNTER (counts) / Wake-Up Function ODR(Hz)
 	// Non-ActivityTime (sec) = NA_COUNTER (counts) / Wake-Up Function ODR(Hz)
-	kxtj3_status_t intConf( uint16_t threshold, uint8_t moveDur, uint8_t naDur, bool polarity = HIGH);
+	kxtj3_status_t intConf( uint16_t threshold, uint8_t moveDur, uint8_t naDur, bool polarity = HIGH, bool latch = false);
 	
 	// Read axis acceleration as Float
 	float axisAccel( axis_t _axis);
