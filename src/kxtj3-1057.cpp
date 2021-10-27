@@ -315,7 +315,7 @@ void KXTJ3::applySettings( void )
 //  Configure interrupt, stop or move, threshold and duration
 //	Durationsteps and maximum values depend on the ODR chosen.
 //****************************************************************************//
-kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur, uint8_t naDur, bool polarity, bool latch = false)
+kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur, uint8_t naDur, bool polarity, bool latch)
 {
 	// Note that to properly change the value of this register, the PC1 bit in CTRL_REG1must first be set to “0”.
 	standby( true );
