@@ -390,3 +390,27 @@ bool KXTJ3::isMotionInt()
 
 	return ( int_src_1 & 0b10) >> 1; // return WUFS bit (1 when motion int)
 }
+
+void KXTJ3::setSelfTest(bool enabled)
+{
+	standby(true); // must put in standby before changing these registers
+
+	if(enabled)
+	{
+		// set self test polarity to positive
+		uint8_t reg;
+		readRegister(&reg, KXTJ3_INT_CTRL_REG1);
+		reg |= 0b10;
+		writeRegister(KXTJ3_INT_CTRL_REG1, reg);
+
+		// enable self test
+		writeRegister(KXTJ3_SELF_TEST_REG, 0xCA);
+	}
+	else
+	{
+		// disable self test
+		writeRegister(KXTJ3_SELF_TEST_REG, 0x00);
+	}
+	
+	standby(false); // put in normal mode
+}
