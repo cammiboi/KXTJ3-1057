@@ -315,7 +315,7 @@ void KXTJ3::applySettings( void )
 //  Configure interrupt, stop or move, threshold and duration
 //	Durationsteps and maximum values depend on the ODR chosen.
 //****************************************************************************//
-kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur, uint8_t naDur, bool polarity )
+kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur, uint8_t naDur, bool polarity, bool latch = false)
 {
 	// Note that to properly change the value of this register, the PC1 bit in CTRL_REG1must first be set to “0”.
 	standby( true );
@@ -324,10 +324,15 @@ kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur, uint8_t naDur
 
 	// Build INT_CTRL_REG1
 
-	uint8_t dataToWrite = 0x2A;  		// Interrupt enabled, active LOW, non-latched
+	uint8_t dataToWrite = 0x22;  		// Interrupt enabled, active LOW, latched
 	
 	if( polarity == HIGH )
 		dataToWrite |= (0x01 << 4);		// Active HIGH
+
+	if (!latch)
+	{
+		dataToWrite |= 0b1000; // not latched
+	}
 
 	_DEBBUG ("KXTJ3_INT_CTRL_REG1: 0x", dataToWrite);
 	returnError = writeRegister(KXTJ3_INT_CTRL_REG1, dataToWrite);
