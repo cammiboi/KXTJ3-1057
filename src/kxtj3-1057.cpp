@@ -315,7 +315,7 @@ void KXTJ3::applySettings( void )
 //  Configure interrupt, stop or move, threshold and duration
 //	Durationsteps and maximum values depend on the ODR chosen.
 //****************************************************************************//
-kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur, uint8_t naDur, bool polarity, bool latch)
+kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur, uint8_t naDur, bool polarity, bool latch, float sampleRateHz)
 {
 	// Note that to properly change the value of this register, the PC1 bit in CTRL_REG1must first be set to “0”.
 	standby( true );
@@ -382,6 +382,40 @@ kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur, uint8_t naDur
 	_DEBBUG ("KXTJ3_NA_COUNTER: 0x", dataToWrite);
 	returnError = writeRegister(KXTJ3_NA_COUNTER, dataToWrite);
 
+	// Sample rate Hz
+	dataToWrite = 0;
+
+	if(sampleRateHz >= 100.0)
+	{
+		dataToWrite = 0b111;
+	}
+	else if(sampleRateHz >= 50.0)
+	{
+		dataToWrite = 0b110;
+	}
+	else if(sampleRateHz >= 25.0)
+	{
+		dataToWrite = 0b101;
+	}
+	else if(sampleRateHz >= 12.5)
+	{
+		dataToWrite = 0b100;
+	}
+	else if(sampleRateHz >= 6.25)
+	{
+		dataToWrite = 0b011;
+	}
+	else if(sampleRateHz >= 3.125)
+	{
+		dataToWrite = 0b010;
+	}
+	else if(sampleRateHz >= 1.563)
+	{
+		dataToWrite = 0b001;
+	}
+
+	returnError = writeRegister(KXTJ3_CTRL_REG2, dataToWrite);
+
 	// Set IMU to Operational mode
 	returnError = standby( false );
 
@@ -418,4 +452,29 @@ void KXTJ3::setSelfTest(bool enabled)
 	}
 	
 	standby(false); // put in normal mode
+}
+
+kxtj3_status_t KXTJ3::intAxisConf(bool xPosEn, bool xNegEn, bool yPosEn, bool yNegEn, bool zPosEn, bool zNegEn)
+{
+	standby(true);
+
+	kxtj3_status_t returnError = IMU_SUCCESS;
+
+	uint8_t reg_val;
+	returnError = readRegister(&reg_val, KXTJ3_INT_CTRL_REG2);
+
+	reg_val &= 0b10000000; // clear all axis en bits
+
+	reg_val |= (xNegEn << 5);
+	reg_val |= (xPosEn << 4);
+	reg_val |= (yNegEn << 3);
+	reg_val |= (yPosEn << 2);
+	reg_val |= (zNegEn << 1);
+	reg_val |= (zPosEn);
+
+	returnError = writeRegister(KXTJ3_INT_CTRL_REG2, reg_val);
+
+	returnError = standby(false);
+
+	return returnError;
 }

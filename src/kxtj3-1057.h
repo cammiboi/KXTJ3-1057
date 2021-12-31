@@ -94,8 +94,11 @@ public:
 	// Threshold (g) = threshold (counts) / 256(counts/g)
 	// timeDur (sec) = WAKEUP_COUNTER (counts) / Wake-Up Function ODR(Hz)
 	// Non-ActivityTime (sec) = NA_COUNTER (counts) / Wake-Up Function ODR(Hz)
-	kxtj3_status_t intConf( uint16_t threshold, uint8_t moveDur, uint8_t naDur, bool polarity = HIGH, bool latch = false);
-	
+	kxtj3_status_t intConf( uint16_t threshold, uint8_t moveDur, uint8_t naDur, bool polarity = HIGH, bool latch = false, float sampleRateHz = 0.781);
+
+	// set which axis(s) can cause a motion interrupt
+	kxtj3_status_t intAxisConf(bool xPosEn, bool xNegEn, bool yPosEn, bool yNegEn, bool zPosEn, bool zNegEn);
+
 	// Read axis acceleration as Float
 	float axisAccel( axis_t _axis);
 
